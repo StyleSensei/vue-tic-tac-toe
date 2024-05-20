@@ -12,7 +12,7 @@ defineEmits<{
 </script>
 
 <template>
-<button id="id" 
+<button @click="$emit('onClick')" id="id" 
 >{{ text }}</button>
 </template>
 

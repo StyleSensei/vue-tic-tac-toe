@@ -3,7 +3,7 @@ import { Player } from "./Player";
 export class Game{
 id: number;
 
-    constructor(public player: Player[]){
+    constructor(public players: Player[]){
         this.id = Date.now();
     }
 }
