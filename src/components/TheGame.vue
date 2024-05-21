@@ -25,11 +25,18 @@ const handleSubmit = (input: string) => {
 };
 
 const startGame = () => {
+  state.value.board = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ];
   state.value.games.push(new Game(state.value.players));
   state.value.games[state.value.games.length - 1].players[0].symbol = '0';
   state.value.games[state.value.games.length - 1].players[1].symbol = 'X';
-  state.value.gameRunning = !state.value.gameRunning;
-  console.log('game running');
+  state.value.gameRunning = true;
+  console.log(state.value.gameRunning);
+  console.log(state.value.games);
+
   const startingPlayer = () => {
     const randomBoolean = () => Math.random() >= 0.5;
     let playerOneIsCurrentPlayer = ref<boolean>(
@@ -86,6 +93,11 @@ const updateCurrentPlayer = (currentPlayerValue: string) => {
     :players-in-game="state.games[state.games.length - 1].players"
     :current-player="state.currentPlayer"
     @update-current-player="updateCurrentPlayer"
+    @new-game="startGame"
+    @the-winner="
+      (theWinner) => (state.games[state.games.length - 1].winner = theWinner)
+    "
+    @game-finished="state.gameRunning=false"
   ></Board>
 </template>
 

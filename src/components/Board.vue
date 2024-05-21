@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Player } from '../models/Player';
+import Button from './Button.vue';
 
 interface BoardProps {
   board: [string[], string[], string[]];
@@ -13,30 +14,41 @@ let currentPlayer = ref(props.currentPlayer);
 const emit = defineEmits<{
   (e: 'playerMove', rowIndex: number, cellIndex: number): void;
   (e: 'updateCurrentPlayer', currentPlayerValue: string): void;
+  (e: 'newGame'): void;
+  (e:'theWinner',theWinner:string):void
+  (e:'gameFinished'):void
 }>();
 
 const player0 = props.playersInGame[0].symbol;
 const playerX = props.playersInGame[1].symbol;
+let theWinner: string;
 
-
+const nameOfTheWinner = () => {
+    if (winningGame()) {
+    theWinner =
+      currentPlayer.value === '0'
+        ? props.playersInGame[0].playerName
+        : props.playersInGame[1].playerName;
+    alert(theWinner + ' is the winner');
+    emit('gameFinished')
+  }
+  emit('theWinner',theWinner)
+}
 
 const makeMove = (rowIndex: number, cellIndex: number) => {
-    props.board[rowIndex][cellIndex] = currentPlayer.value;
-    console.log(props.board);
-    checkForWinningGame();
-    if (checkForWinningGame()) {
-        alert(currentPlayer.value + ' is the winner')
-      console.log('winner');
-  }
-    currentPlayer.value = currentPlayer.value === 'X' ? '0' : 'X';
-    emit('updateCurrentPlayer', currentPlayer.value);
+  props.board[rowIndex][cellIndex] = currentPlayer.value;
+  console.log(props.board);
+  winningGame();
+nameOfTheWinner()
+  currentPlayer.value = currentPlayer.value === 'X' ? '0' : 'X';
+  emit('updateCurrentPlayer', currentPlayer.value);
 };
-const checkForWinningGame = () => {
+const winningGame = () => {
   for (let i = 0; i < 3; i++) {
-    if (props.board[i].every(cell => cell === currentPlayer.value))
+    if (props.board[i].every((cell) => cell === currentPlayer.value))
       return true;
 
-    if (props.board.every(row => row[i] === currentPlayer.value)) return true;
+    if (props.board.every((row) => row[i] === currentPlayer.value)) return true;
   }
   if (
     props.board[0][0] === currentPlayer.value &&
@@ -85,6 +97,14 @@ const checkForWinningGame = () => {
       </p>
     </td>
   </tr>
+  <div>
+    <Button
+      id="new-game"
+      title="new game"
+      text="Starta nytt spel"
+      @on-click="$emit('newGame')"
+    ></Button>
+  </div>
 </template>
 
 <style scoped lang="scss">
