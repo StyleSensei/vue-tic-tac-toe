@@ -18,15 +18,18 @@ const emit = defineEmits<{
 const player0 = props.playersInGame[0].symbol;
 const playerX = props.playersInGame[1].symbol;
 
+
+
 const makeMove = (rowIndex: number, cellIndex: number) => {
     props.board[rowIndex][cellIndex] = currentPlayer.value;
+    console.log(props.board);
     checkForWinningGame();
-  currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X';
-  console.log(props.board);
-  emit('updateCurrentPlayer', currentPlayer.value);
-  if (checkForWinningGame()) {
-    console.log('winner');
+    if (checkForWinningGame()) {
+        alert(currentPlayer.value + ' is the winner')
+      console.log('winner');
   }
+    currentPlayer.value = currentPlayer.value === 'X' ? '0' : 'X';
+    emit('updateCurrentPlayer', currentPlayer.value);
 };
 const checkForWinningGame = () => {
   for (let i = 0; i < 3; i++) {
