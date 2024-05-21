@@ -3,15 +3,19 @@ import Input from './Input.vue';
 import Button from './Button.vue';
 import { ref } from 'vue';
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'onSubmit', model: string): void;
 }>();
 const model = ref("")
-// const model = defineModel() 
+
+const handleOnSubmit = () => {
+emit('onSubmit', model.value)
+model.value = ''
+}
 </script>
 
 <template>
-  <form @submit.prevent="$emit('onSubmit', model)">
+  <form @submit.prevent = handleOnSubmit>
     <!-- <Input id="user" label="Användare" v-model="model" ></Input> -->
     <input id="user" v-model="model">
     <!-- <Input id="user2" label="Användare 2"></Input> -->

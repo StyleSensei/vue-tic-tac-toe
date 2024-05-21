@@ -5,5 +5,8 @@ import { Player } from "./Player"
 export interface IGameState {
     games: Game[]
     players: Player[]
-results: IResult[]
+results: IResult[],
+gameRunning: boolean,
+currentPlayer:string
+board:[string[],string[],string[]]
 }
