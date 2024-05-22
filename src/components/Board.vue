@@ -15,8 +15,8 @@ const emit = defineEmits<{
   (e: 'playerMove', rowIndex: number, cellIndex: number): void;
   (e: 'updateCurrentPlayer', currentPlayerValue: string): void;
   (e: 'newGame'): void;
-  (e:'theWinner',theWinner:string):void
-  (e:'gameFinished'):void
+  (e: 'theWinner', theWinner: string): void;
+  (e: 'gameFinished'): void;
 }>();
 
 const player0 = props.playersInGame[0].symbol;
@@ -24,22 +24,25 @@ const playerX = props.playersInGame[1].symbol;
 let theWinner: string;
 
 const nameOfTheWinner = () => {
-    if (winningGame()) {
+  if (winningGame()) {
     theWinner =
       currentPlayer.value === '0'
         ? props.playersInGame[0].playerName
         : props.playersInGame[1].playerName;
-    alert(theWinner + ' is the winner');
-    emit('gameFinished')
+    setTimeout(() => {
+      alert(theWinner + ' is the winner');
+      emit('gameFinished');
+    }, 1000);
   }
-  emit('theWinner',theWinner)
-}
+  emit('theWinner', theWinner);
+};
 
 const makeMove = (rowIndex: number, cellIndex: number) => {
   props.board[rowIndex][cellIndex] = currentPlayer.value;
   console.log(props.board);
   winningGame();
-nameOfTheWinner()
+  checkIfDraw();
+  nameOfTheWinner();
   currentPlayer.value = currentPlayer.value === 'X' ? '0' : 'X';
   emit('updateCurrentPlayer', currentPlayer.value);
 };
@@ -65,6 +68,25 @@ const winningGame = () => {
     return true;
   }
   return false;
+};
+
+const checkIfDraw = () => {
+    let isDraw = true;
+
+    props.board.forEach((row) => {
+        row.forEach((cell) => {
+            if (cell === '') {
+                isDraw = false;
+                console.log('fortsätt')
+            }
+        });
+    });
+
+    if (!winningGame() && isDraw) {
+        alert('draw');
+    }
+
+    return isDraw;
 };
 </script>
 
