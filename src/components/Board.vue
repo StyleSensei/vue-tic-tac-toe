@@ -39,7 +39,6 @@ const nameOfTheWinner = () => {
 
 const makeMove = (rowIndex: number, cellIndex: number) => {
   props.board[rowIndex][cellIndex] = currentPlayer.value;
-  console.log(props.board);
   winningGame();
   checkIfDraw();
   nameOfTheWinner();
@@ -71,22 +70,21 @@ const winningGame = () => {
 };
 
 const checkIfDraw = () => {
-    let isDraw = true;
+  let isDraw = true;
 
-    props.board.forEach((row) => {
-        row.forEach((cell) => {
-            if (cell === '') {
-                isDraw = false;
-                console.log('fortsätt')
-            }
-        });
+  props.board.forEach((row) => {
+    row.forEach((cell) => {
+      if (cell === '') {
+        isDraw = false;
+      }
     });
+  });
 
-    if (!winningGame() && isDraw) {
-        alert('draw');
-    }
+  if (!winningGame() && isDraw) {
+    alert('draw');
+  }
 
-    return isDraw;
+  return isDraw;
 };
 </script>
 
@@ -105,20 +103,24 @@ const checkIfDraw = () => {
       </li>
     </ul>
   </article>
-  <tr v-for="(row, rowIndex) in board" :key="rowIndex">
-    <td
-      v-for="(cell, cellIndex) in row"
-      :key="cellIndex"
-      @click="
-        $emit('playerMove', rowIndex, cellIndex), makeMove(rowIndex, cellIndex)
-      "
-    >
-      row: {{ rowIndex }}, cell: {{ cellIndex }}
-      <p>
-        {{ cell }}
-      </p>
-    </td>
-  </tr>
+
+  <table>
+    <tr v-for="(row, rowIndex) in board" :key="rowIndex">
+      <td
+        v-for="(cell, cellIndex) in row"
+        :key="cellIndex"
+        :aria-disabled="board[rowIndex][cellIndex]!= ''"
+        @click="
+          $emit('playerMove', rowIndex, cellIndex),
+            makeMove(rowIndex, cellIndex)">
+        row: {{ rowIndex }}, cell: {{ cellIndex }}
+        <p>
+          {{ cell }}
+        </p>
+      </td>
+    </tr>
+  </table>
+
   <div>
     <Button
       id="new-game"
@@ -158,5 +160,8 @@ td {
 }
 p {
   font-size: 3rem;
+}
+[aria-disabled="true"]{
+    pointer-events: none;
 }
 </style>
