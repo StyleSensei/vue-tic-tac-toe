@@ -20,7 +20,8 @@ let state = ref<IGameState>({
   ],
 });
 state.value = JSON.parse(
-  localStorage.getItem('state.value') || JSON.stringify({})
+  localStorage.getItem('state.value') ||
+    JSON.stringify(state.value)
 );
 
 watch(state.value, (newVal) => {
@@ -88,19 +89,19 @@ const updateScoreAndWinner = (theWinnerName: string) => {
 };
 
 const resetGame = () => {
-state.value = {
-  games: [],
-  players: [],
-  results: [],
-  gameRunning: false,
-  currentPlayer: '',
-  board: [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ],
-}
-}
+  state.value = {
+    games: [],
+    players: [],
+    results: [],
+    gameRunning: false,
+    currentPlayer: '',
+    board: [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ],
+  };
+};
 </script>
 
 <template>

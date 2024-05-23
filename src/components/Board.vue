@@ -20,7 +20,7 @@ const emit = defineEmits<{
   (e: 'newGame'): void;
   (e: 'theWinner', theWinner: string): void;
   (e: 'gameFinished'): void;
-  (e: 'reset'):void
+  (e: 'reset'): void;
 }>();
 
 const player0 = props.playersInGame[0].symbol;
@@ -41,8 +41,6 @@ const nameOfTheWinner = () => {
   emit('theWinner', theWinner);
 };
 
-
-
 const makeMove = (rowIndex: number, cellIndex: number) => {
   props.board[rowIndex][cellIndex] = currentPlayer.value;
   winningGame();
@@ -51,13 +49,28 @@ const makeMove = (rowIndex: number, cellIndex: number) => {
   currentPlayer.value = currentPlayer.value === 'X' ? '0' : 'X';
   emit('updateCurrentPlayer', currentPlayer.value);
 };
-const winningGame = () => {
-  for (let i = 0; i < 3; i++) {
-    if (props.board[i].every((cell) => cell === currentPlayer.value))
-      return true;
 
-    if (props.board.every((row) => row[i] === currentPlayer.value)) return true;
+const winningGame = () => {
+  let combinedArray = props.board.flat();
+  let isWinningRow = false;
+
+  for (let i = 0; i < 3; i++) {
+    if (
+      combinedArray[i] === currentPlayer.value &&
+      combinedArray[i + 3] === currentPlayer.value &&
+      combinedArray[i + 6] === currentPlayer.value
+    )
+      isWinningRow = true;
   }
+  for (let j = 0; j < 9; j += 3) {
+    if (
+      combinedArray[j] === currentPlayer.value &&
+      combinedArray[j + 1] === currentPlayer.value &&
+      combinedArray[j + 2] === currentPlayer.value
+    )
+      isWinningRow = true;
+  }
+
   if (
     props.board[0][0] === currentPlayer.value &&
     props.board[1][1] === currentPlayer.value &&
@@ -72,7 +85,7 @@ const winningGame = () => {
   ) {
     return true;
   }
-  return false;
+  return isWinningRow;
 };
 
 const checkIfDraw = () => {
@@ -144,7 +157,12 @@ const checkIfDraw = () => {
         }
       "
     ></Button>
-    <Button id="reset" title="reset" text="Reset" @on-click="$emit('reset')"></Button>
+    <Button
+      id="reset"
+      title="reset"
+      text="Reset"
+      @on-click="$emit('reset')"
+    ></Button>
   </div>
 </template>
 
