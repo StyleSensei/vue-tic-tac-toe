@@ -2,11 +2,14 @@
 import { ref } from 'vue';
 import { Player } from '../models/Player';
 import Button from './Button.vue';
+import Score from './Score.vue';
+import { Game } from '../models/Game';
 
 interface BoardProps {
   board: [string[], string[], string[]];
   playersInGame: Player[];
   currentPlayer: string;
+  games: Game[];
 }
 const props = defineProps<BoardProps>();
 
@@ -21,7 +24,7 @@ const emit = defineEmits<{
 
 const player0 = props.playersInGame[0].symbol;
 const playerX = props.playersInGame[1].symbol;
-let theWinner: string;
+let theWinner: string = props.games[props.games.length - 1].winner;
 
 const nameOfTheWinner = () => {
   if (winningGame()) {
@@ -36,6 +39,8 @@ const nameOfTheWinner = () => {
   }
   emit('theWinner', theWinner);
 };
+
+
 
 const makeMove = (rowIndex: number, cellIndex: number) => {
   props.board[rowIndex][cellIndex] = currentPlayer.value;
@@ -89,30 +94,35 @@ const checkIfDraw = () => {
 </script>
 
 <template>
-  <article>
-    <ul>
-      currentPlayer:
-      {{
-        currentPlayer
-      }}
-      <li v-for="(player, i) in playersInGame" key="i">
-        <span v-if="i === 0"> Player {{ player0 }}: </span>
-        <span v-else> Player {{ playerX }}: </span>
+  <section id="stats">
+    <article>
+      <ul>
+        currentPlayer:
+        {{
+          currentPlayer
+        }}
+        <li v-for="(player, i) in playersInGame" key="i">
+          <span v-if="i === 0"> Player {{ player0 }}: </span>
+          <span v-else> Player {{ playerX }}: </span>
 
-        {{ player.playerName }},
-      </li>
-    </ul>
-  </article>
+          {{ player.playerName }},
+        </li>
+      </ul>
+    </article>
+    <Score :games="games"></Score>
+  </section>
 
   <table>
     <tr v-for="(row, rowIndex) in board" :key="rowIndex">
       <td
         v-for="(cell, cellIndex) in row"
         :key="cellIndex"
-        :aria-disabled="board[rowIndex][cellIndex]!= ''"
+        :aria-disabled="board[rowIndex][cellIndex] != '' || theWinner != ''"
         @click="
           $emit('playerMove', rowIndex, cellIndex),
-            makeMove(rowIndex, cellIndex)">
+            makeMove(rowIndex, cellIndex)
+        "
+      >
         row: {{ rowIndex }}, cell: {{ cellIndex }}
         <p>
           {{ cell }}
@@ -126,7 +136,12 @@ const checkIfDraw = () => {
       id="new-game"
       title="new game"
       text="Starta nytt spel"
-      @on-click="$emit('newGame')"
+      @on-click="
+        () => {
+          theWinner = '';
+          $emit('newGame');
+        }
+      "
     ></Button>
   </div>
 </template>
@@ -161,7 +176,12 @@ td {
 p {
   font-size: 3rem;
 }
-[aria-disabled="true"]{
-    pointer-events: none;
+[aria-disabled='true'] {
+  pointer-events: none;
+}
+
+#stats {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

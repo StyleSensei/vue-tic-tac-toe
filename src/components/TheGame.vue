@@ -72,6 +72,13 @@ const startGame = () => {
 const updateCurrentPlayer = (currentPlayerValue: string) => {
   state.value.currentPlayer = currentPlayerValue;
 };
+
+const updateScoreAndWinner = (theWinnerName: string) => {
+  state.value.games[state.value.games.length - 1].winner = theWinnerName;
+  state.value.games[state.value.games.length - 1].players.forEach((player) => {
+    player.playerName === theWinnerName ? player.points++ : '';
+  });
+};
 </script>
 
 <template>
@@ -92,12 +99,10 @@ const updateCurrentPlayer = (currentPlayerValue: string) => {
     :board="state.board"
     :players-in-game="state.games[state.games.length - 1].players"
     :current-player="state.currentPlayer"
+    :games="state.games"
     @update-current-player="updateCurrentPlayer"
     @new-game="startGame"
-    @the-winner="
-      (theWinner) => (state.games[state.games.length - 1].winner = theWinner)
-    "
-    @game-finished="state.gameRunning=false"
+    @the-winner="updateScoreAndWinner"
   ></Board>
 </template>
 
