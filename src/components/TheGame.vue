@@ -86,6 +86,21 @@ const updateScoreAndWinner = (theWinnerName: string) => {
     player.playerName === theWinnerName ? player.points++ : '';
   });
 };
+
+const resetGame = () => {
+state.value = {
+  games: [],
+  players: [],
+  results: [],
+  gameRunning: false,
+  currentPlayer: '',
+  board: [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ],
+}
+}
 </script>
 
 <template>
@@ -110,6 +125,7 @@ const updateScoreAndWinner = (theWinnerName: string) => {
     @update-current-player="updateCurrentPlayer"
     @new-game="startGame"
     @the-winner="updateScoreAndWinner"
+    @reset="resetGame"
   ></Board>
 </template>
 

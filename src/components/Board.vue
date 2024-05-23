@@ -20,6 +20,7 @@ const emit = defineEmits<{
   (e: 'newGame'): void;
   (e: 'theWinner', theWinner: string): void;
   (e: 'gameFinished'): void;
+  (e: 'reset'):void
 }>();
 
 const player0 = props.playersInGame[0].symbol;
@@ -143,6 +144,7 @@ const checkIfDraw = () => {
         }
       "
     ></Button>
+    <Button id="reset" title="reset" text="Reset" @on-click="$emit('reset')"></Button>
   </div>
 </template>
 
