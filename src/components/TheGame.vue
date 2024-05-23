@@ -7,7 +7,7 @@ import { Player } from '../models/Player';
 import { Game } from '../models/Game';
 import Board from './Board.vue';
 
-const state = ref<IGameState>({
+let state = ref<IGameState>({
   games: [],
   players: [],
   results: [],
@@ -19,9 +19,16 @@ const state = ref<IGameState>({
     ['', '', ''],
   ],
 });
+state.value = JSON.parse(
+  localStorage.getItem('state.value') || JSON.stringify({})
+);
+
+watch(state.value, (newVal) => {
+  localStorage.setItem('state.value', JSON.stringify(newVal));
+});
+
 const handleSubmit = (input: string) => {
   state.value.players.push(new Player(input));
-  console.log();
 };
 
 const startGame = () => {
