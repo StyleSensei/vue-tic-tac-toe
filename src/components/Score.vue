@@ -16,6 +16,7 @@ const props = defineProps<ScoreProps>();
       <thead>
         <tr>
           <th>Game id: {{ games[games.length - 1].id }}</th>
+          <th></th>
         </tr>
         <tr>
           <th>Player</th>
@@ -32,4 +33,14 @@ const props = defineProps<ScoreProps>();
   </article>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+table{
+  text-align: start;
+
+}
+th{
+text-align: left;
+}
+
+</style>

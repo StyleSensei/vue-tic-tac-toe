@@ -135,8 +135,8 @@ const checkIfDraw = () => {
       </p>
     </article>
 
-    <Score :games="games" :players="playersInGame"></Score>
   </section>
+  <Score :games="games" :players="playersInGame"></Score>
 
   <table>
     <tr v-for="(row, rowIndex) in board" :key="rowIndex">
@@ -158,6 +158,7 @@ const checkIfDraw = () => {
 
   <div>
     <Button
+    class="new-game"
       id="new-game"
       title="new game"
       text="Start new round"
@@ -169,6 +170,7 @@ const checkIfDraw = () => {
       "
     ></Button>
     <Button
+    class="reset"
       id="reset"
       title="reset"
       text="Reset"
@@ -199,8 +201,8 @@ td {
   color: black;
   width: 25vw;
   height: 25vw;
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 180px;
+  max-height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,5 +219,12 @@ p {
 #stats {
   display: flex;
   justify-content: space-between;
+  
+}
+.reset{
+  background-color: red;
+}
+.new-game{
+  background-color: blue;
 }
 </style>
