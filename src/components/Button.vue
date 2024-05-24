@@ -12,10 +12,12 @@ defineEmits<{
 </script>
 
 <template>
-<button @click="$emit('onClick')" id="id"
+<button @click="$emit('onClick')" id="id" :disabled="false"
 >{{ text }}</button>
 </template>
 
 <style scoped>
-
+button{
+    margin: 0 1rem
+}
 </style>

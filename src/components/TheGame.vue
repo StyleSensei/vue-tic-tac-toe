@@ -127,8 +127,9 @@ const updateBoard = (rowIndex: number, cellIndex: number, value: string) => {
     ></Form>
     <Button
       id="start-game"
-      text="Starta spel"
+      text="Start game"
       title="start game"
+      :disabled="state.players.length < 2"
       @on-click="startGame"
     ></Button>
   </section>
@@ -146,4 +147,8 @@ const updateBoard = (rowIndex: number, cellIndex: number, value: string) => {
   ></Board>
 </template>
 
-<style scoped></style>
+<style scoped>
+button {
+  padding: 1rem 4rem;
+}
+</style>
