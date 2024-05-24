@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import Input from './Input.vue';
 import Button from './Button.vue';
 import { ref } from 'vue';
 
@@ -27,7 +26,7 @@ model.value = ''
       :disabled="model === '' || model.startsWith(' ')"
     ></Button>
   </form>
-  
+
 </template>
 
 <style scoped lang="scss">

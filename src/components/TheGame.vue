@@ -2,6 +2,7 @@
 import { Ref, nextTick, onMounted, ref, watch } from 'vue';
 import Form from './Form.vue';
 import Button from './Button.vue';
+import GameParticipants from './GameParticipants.vue';
 import { IGameState } from '../models/IGameState';
 import { Player } from '../models/Player';
 import { Game } from '../models/Game';
@@ -132,7 +133,10 @@ const updateBoard = (rowIndex: number, cellIndex: number, value: string) => {
       :disabled="state.players.length < 2"
       @on-click="startGame"
     ></Button>
+    <GameParticipants v-if="!state.gameRunning" :players="state.players"></GameParticipants>
   </section>
+
+
   <Board
     v-if="state.gameRunning"
     :board="state.board"
@@ -148,7 +152,14 @@ const updateBoard = (rowIndex: number, cellIndex: number, value: string) => {
 </template>
 
 <style scoped>
+section{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
 button {
   padding: 1rem 4rem;
+  max-width: 300px;
 }
 </style>

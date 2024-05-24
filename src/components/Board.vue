@@ -94,17 +94,17 @@ const checkIfDraw = () => {
 
   props.board.forEach((row) => {
     row.forEach((cell) => {
-      if (cell === '' ) {
+      if (cell === '') {
         isDraw = false;
       }
     });
   });
 
   if (!winningGame() && isDraw) {
-    isDraw = true
+    isDraw = true;
   }
   if (winningGame() && isDraw) {
-    isDraw = false
+    isDraw = false;
   }
 
   return isDraw;
@@ -115,15 +115,19 @@ const checkIfDraw = () => {
   <section id="stats">
     <article>
       <p>
-        <span v-if="currentPlayer === 'X' && theWinner === '' && !checkIfDraw()">
+        <span
+          v-if="currentPlayer === 'X' && theWinner === '' && !checkIfDraw()"
+        >
           Make a move,
           {{ playersInGame[1].playerName }}!
         </span>
-        <span v-if="currentPlayer === '0' && theWinner === '' && !checkIfDraw()">
+        <span
+          v-if="currentPlayer === '0' && theWinner === '' && !checkIfDraw()"
+        >
           Make a move,
           {{ playersInGame[0].playerName }}!
         </span>
-        <span v-if="theWinner !== '' ">
+        <span v-if="theWinner !== ''">
           {{ theWinner }}
           won!
         </span>
@@ -145,7 +149,6 @@ const checkIfDraw = () => {
             makeMove(rowIndex, cellIndex)
         "
       >
-        row: {{ rowIndex }}, cell: {{ cellIndex }}
         <p>
           {{ cell }}
         </p>
@@ -188,21 +191,24 @@ tr {
   /* gap: 10px; */
   justify-content: space-around;
   margin-bottom: 2rem;
-
-  width: 60vw;
+  gap: 2rem;
 }
 
 td {
-  /* padding: 5rem; */
   background-color: antiquewhite;
   color: black;
-  width: 200px;
-  height: 200px;
+  width: 25vw;
+  height: 25vw;
+  max-width: 200px;
+  max-height: 200px;
+  display: flex;
   align-items: center;
   justify-content: center;
+  
 }
 p {
   font-size: 3rem;
+  margin: 1.5rem auto;
 }
 [aria-disabled='true'] {
   pointer-events: none;
