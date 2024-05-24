@@ -24,7 +24,6 @@ const emit = defineEmits<{
   (e: 'updateCurrentPlayer', currentPlayerValue: string): void;
   (e: 'newGame'): void;
   (e: 'theWinner', theWinner: string): void;
-  //   (e: 'gameFinished'): void;
   (e: 'reset'): void;
 }>();
 
@@ -38,7 +37,7 @@ const nameOfTheWinner = () => {
       currentPlayer.value === '0'
         ? props.playersInGame[0].playerName
         : props.playersInGame[1].playerName;
-    alert(theWinner + ' is the winner');
+    // alert(theWinner + ' is the winner');
   }
   emit('theWinner', theWinner);
 };
@@ -95,14 +94,17 @@ const checkIfDraw = () => {
 
   props.board.forEach((row) => {
     row.forEach((cell) => {
-      if (cell === '') {
+      if (cell === '' ) {
         isDraw = false;
       }
     });
   });
 
   if (!winningGame() && isDraw) {
-    alert('draw');
+    isDraw = true
+  }
+  if (winningGame() && isDraw) {
+    isDraw = false
   }
 
   return isDraw;
@@ -112,19 +114,23 @@ const checkIfDraw = () => {
 <template>
   <section id="stats">
     <article>
-      <ul>
-        currentPlayer:
-        {{
-          currentPlayer
-        }}
-        <li v-for="(player, i) in playersInGame" key="i">
-          <span v-if="i === 0"> Player {{ player0 }}: </span>
-          <span v-else> Player {{ playerX }}: </span>
-
-          {{ player.playerName }},
-        </li>
-      </ul>
+      <p>
+        <span v-if="currentPlayer === 'X' && theWinner === '' && !checkIfDraw()">
+          Make a move,
+          {{ playersInGame[1].playerName }}!
+        </span>
+        <span v-if="currentPlayer === '0' && theWinner === '' && !checkIfDraw()">
+          Make a move,
+          {{ playersInGame[0].playerName }}!
+        </span>
+        <span v-if="theWinner !== '' ">
+          {{ theWinner }}
+          won!
+        </span>
+        <span v-if="theWinner === '' && checkIfDraw()">Draw!</span>
+      </p>
     </article>
+
     <Score :games="games" :players="playersInGame"></Score>
   </section>
 
@@ -151,7 +157,7 @@ const checkIfDraw = () => {
     <Button
       id="new-game"
       title="new game"
-      text="Starta nytt spel"
+      text="Start new round"
       @on-click="
         () => {
           theWinner = '';
