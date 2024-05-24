@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, onMounted, ref, watch } from 'vue';
+import { Ref, nextTick, onMounted, ref, watch } from 'vue';
 import Form from './Form.vue';
 import Button from './Button.vue';
 import { IGameState } from '../models/IGameState';
@@ -19,14 +19,22 @@ let state = ref<IGameState>({
     ['', '', ''],
   ],
 });
-state.value = JSON.parse(
-  localStorage.getItem('state.value') ||
-    JSON.stringify(state.value)
-);
 
-watch(state.value, (newVal) => {
-  localStorage.setItem('state.value', JSON.stringify(newVal));
+onMounted(() => {
+  const storedState = localStorage.getItem('state.value');
+  if (storedState) {
+    state.value = JSON.parse(storedState);
+  }
 });
+
+watch(
+  () => state.value,
+  async (newValue) => {
+    await nextTick();
+    localStorage.setItem('state.value', JSON.stringify(newValue));
+  },
+  { deep: true }
+);
 
 const handleSubmit = (input: string) => {
   state.value.players.push(new Player(input));
@@ -42,8 +50,6 @@ const startGame = () => {
   state.value.games[state.value.games.length - 1].players[0].symbol = '0';
   state.value.games[state.value.games.length - 1].players[1].symbol = 'X';
   state.value.gameRunning = true;
-  console.log(state.value.gameRunning);
-  console.log(state.value.games);
 
   const startingPlayer = () => {
     const randomBoolean = () => Math.random() >= 0.5;
@@ -55,7 +61,7 @@ const startGame = () => {
         updatedValue;
     });
 
-    let playerTwoIsCurrentPlayer = ref(
+    let playerTwoIsCurrentPlayer = ref<boolean>(
       state.value.games[state.value.games.length - 1].players[1].currentPlayer
     );
     watch(playerTwoIsCurrentPlayer, (updatedValue) => {
@@ -82,11 +88,16 @@ const updateCurrentPlayer = (currentPlayerValue: string) => {
 };
 
 const updateScoreAndWinner = (theWinnerName: string) => {
-  state.value.games[state.value.games.length - 1].winner = theWinnerName;
-  state.value.games[state.value.games.length - 1].players.forEach((player) => {
-    player.playerName === theWinnerName ? player.points++ : '';
+  const currentGame = state.value.games[state.value.games.length - 1];
+  const currentPlayers = state.value.players;
+  currentGame.winner = theWinnerName;
+  currentPlayers.forEach((player) => {
+    if (player.playerName === theWinnerName) {
+      player.points++;
+    }
   });
 };
+//
 
 const resetGame = () => {
   state.value = {
@@ -101,6 +112,10 @@ const resetGame = () => {
       ['', '', ''],
     ],
   };
+};
+
+const updateBoard = (rowIndex: number, cellIndex: number, value: string) => {
+  state.value.board[rowIndex][cellIndex] = value;
 };
 </script>
 
@@ -120,13 +135,14 @@ const resetGame = () => {
   <Board
     v-if="state.gameRunning"
     :board="state.board"
-    :players-in-game="state.games[state.games.length - 1].players"
+    :players-in-game="state.players"
     :current-player="state.currentPlayer"
     :games="state.games"
     @update-current-player="updateCurrentPlayer"
     @new-game="startGame"
     @the-winner="updateScoreAndWinner"
     @reset="resetGame"
+    @player-move="updateBoard"
   ></Board>
 </template>
 

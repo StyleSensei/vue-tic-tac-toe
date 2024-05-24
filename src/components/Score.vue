@@ -1,44 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { Game } from '../models/Game';
+import { Player } from '../models/Player';
 
-
-interface ScoreProps{
-    games: Game[]
+interface ScoreProps {
+  games: Game[];
+  players: Player[];
 }
-const props = defineProps<ScoreProps>()
-
-const games = ref<Game[]>(props.games)
-const players = games.value[games.value.length-1].players
-
-
-console.log(games.value[games.value.length-1].players)
+const props = defineProps<ScoreProps>();
 </script>
 
 <template>
-<article class="score-board">
+  <article class="score-board">
     <table>
-        <thead>
-            <tr>
-                <th>Game id: {{ games[games.length-1].id }}</th>
-            </tr>
-            <tr>
-                <th>Player</th>
-                <th>Score</th>
-            </tr>
-        </thead>
-<tbody>
-    <tr v-for="player in players" :key="player.id">
-        <th>{{ player.playerName }}</th>
-        <td>{{ player.points }}</td>
-    </tr>
-</tbody>
-
+      <thead>
+        <tr>
+          <th>Game id: {{ games[games.length - 1].id }}</th>
+        </tr>
+        <tr>
+          <th>Player</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="player in players" :key="player.id">
+          <th>{{ player.playerName }}</th>
+          <td>{{ player.points }}</td>
+        </tr>
+      </tbody>
     </table>
-
-</article>
+  </article>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

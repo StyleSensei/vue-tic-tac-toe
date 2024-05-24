@@ -15,11 +15,16 @@ const props = defineProps<BoardProps>();
 
 let currentPlayer = ref(props.currentPlayer);
 const emit = defineEmits<{
-  (e: 'playerMove', rowIndex: number, cellIndex: number): void;
+  (
+    e: 'playerMove',
+    rowIndex: number,
+    cellIndex: number,
+    currentPlayerValue: string
+  ): void;
   (e: 'updateCurrentPlayer', currentPlayerValue: string): void;
   (e: 'newGame'): void;
   (e: 'theWinner', theWinner: string): void;
-  (e: 'gameFinished'): void;
+  //   (e: 'gameFinished'): void;
   (e: 'reset'): void;
 }>();
 
@@ -33,16 +38,13 @@ const nameOfTheWinner = () => {
       currentPlayer.value === '0'
         ? props.playersInGame[0].playerName
         : props.playersInGame[1].playerName;
-    setTimeout(() => {
-      alert(theWinner + ' is the winner');
-      emit('gameFinished');
-    }, 1000);
+    alert(theWinner + ' is the winner');
   }
   emit('theWinner', theWinner);
 };
 
 const makeMove = (rowIndex: number, cellIndex: number) => {
-  props.board[rowIndex][cellIndex] = currentPlayer.value;
+  emit('playerMove', rowIndex, cellIndex, currentPlayer.value);
   winningGame();
   checkIfDraw();
   nameOfTheWinner();
@@ -123,7 +125,7 @@ const checkIfDraw = () => {
         </li>
       </ul>
     </article>
-    <Score :games="games"></Score>
+    <Score :games="games" :players="playersInGame"></Score>
   </section>
 
   <table>
@@ -133,7 +135,7 @@ const checkIfDraw = () => {
         :key="cellIndex"
         :aria-disabled="board[rowIndex][cellIndex] != '' || theWinner != ''"
         @click="
-          $emit('playerMove', rowIndex, cellIndex),
+          $emit('playerMove', rowIndex, cellIndex, currentPlayer),
             makeMove(rowIndex, cellIndex)
         "
       >
