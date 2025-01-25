@@ -8,12 +8,12 @@ import { Game } from '../models/Game';
 interface BoardProps {
   board: [string[], string[], string[]];
   playersInGame: Player[];
-  currentPlayer: string;
+  currentPlayer: Player;
   games: Game[];
 }
 const props = defineProps<BoardProps>();
 
-let currentPlayer = ref(props.currentPlayer);
+const currentPlayer = ref(props.currentPlayer);
 const emit = defineEmits<{
   (
     e: 'playerMove',
@@ -21,34 +21,44 @@ const emit = defineEmits<{
     cellIndex: number,
     currentPlayerValue: string
   ): void;
-  (e: 'updateCurrentPlayer', currentPlayerValue: string): void;
+  (e: 'updateCurrentPlayer', currentPlayerValue: Player): void;
   (e: 'newGame'): void;
   (e: 'theWinner', theWinner: string): void;
   (e: 'reset'): void;
 }>();
 
-const player0 = props.playersInGame[0].symbol;
-const playerX = props.playersInGame[1].symbol;
+
 let theWinner: string = props.games[props.games.length - 1].winner;
 
 const nameOfTheWinner = () => {
   if (winningGame()) {
     theWinner =
-      currentPlayer.value === '0'
+      currentPlayer.value.symbol === '0'
         ? props.playersInGame[0].playerName
         : props.playersInGame[1].playerName;
-    // alert(theWinner + ' is the winner');
   }
   emit('theWinner', theWinner);
 };
 
 const makeMove = (rowIndex: number, cellIndex: number) => {
-  emit('playerMove', rowIndex, cellIndex, currentPlayer.value);
+  emit('playerMove', rowIndex, cellIndex, currentPlayer.value.symbol);
   winningGame();
   checkIfDraw();
   nameOfTheWinner();
-  currentPlayer.value = currentPlayer.value === 'X' ? '0' : 'X';
-  emit('updateCurrentPlayer', currentPlayer.value);
+  currentPlayer.value =
+    props.playersInGame[0] === currentPlayer.value
+      ? props.playersInGame[1]
+      : props.playersInGame[0];
+  if (!winningGame()) emit('updateCurrentPlayer', currentPlayer.value);
+  else {
+    emit('updateCurrentPlayer', {
+      id: 0,
+      isCurrentPlayer: true,
+      symbol: '',
+      points: 0,
+      playerName: '',
+    });
+  }
 };
 
 const winningGame = () => {
@@ -57,32 +67,32 @@ const winningGame = () => {
 
   for (let i = 0; i < 3; i++) {
     if (
-      combinedArray[i] === currentPlayer.value &&
-      combinedArray[i + 3] === currentPlayer.value &&
-      combinedArray[i + 6] === currentPlayer.value
+      combinedArray[i] === currentPlayer.value.symbol &&
+      combinedArray[i + 3] === currentPlayer.value.symbol &&
+      combinedArray[i + 6] === currentPlayer.value.symbol
     )
       isWinningRow = true;
   }
   for (let j = 0; j < 9; j += 3) {
     if (
-      combinedArray[j] === currentPlayer.value &&
-      combinedArray[j + 1] === currentPlayer.value &&
-      combinedArray[j + 2] === currentPlayer.value
+      combinedArray[j] === currentPlayer.value.symbol &&
+      combinedArray[j + 1] === currentPlayer.value.symbol &&
+      combinedArray[j + 2] === currentPlayer.value.symbol
     )
       isWinningRow = true;
   }
 
   if (
-    props.board[0][0] === currentPlayer.value &&
-    props.board[1][1] === currentPlayer.value &&
-    props.board[2][2] === currentPlayer.value
+    props.board[0][0] === currentPlayer.value.symbol &&
+    props.board[1][1] === currentPlayer.value.symbol &&
+    props.board[2][2] === currentPlayer.value.symbol
   ) {
     return true;
   }
   if (
-    props.board[0][2] === currentPlayer.value &&
-    props.board[1][1] === currentPlayer.value &&
-    props.board[2][0] === currentPlayer.value
+    props.board[0][2] === currentPlayer.value.symbol &&
+    props.board[1][1] === currentPlayer.value.symbol &&
+    props.board[2][0] === currentPlayer.value.symbol
   ) {
     return true;
   }
@@ -115,18 +125,11 @@ const checkIfDraw = () => {
   <section id="stats">
     <article>
       <p>
-        <span
-          v-if="currentPlayer === 'X' && theWinner === '' && !checkIfDraw()"
-        >
+        <span v-if="theWinner === '' && !checkIfDraw()">
           Make a move,
-          {{ playersInGame[1].playerName }}!
+          {{ props.currentPlayer.playerName }}!
         </span>
-        <span
-          v-if="currentPlayer === '0' && theWinner === '' && !checkIfDraw()"
-        >
-          Make a move,
-          {{ playersInGame[0].playerName }}!
-        </span>
+
         <span v-if="theWinner !== ''">
           {{ theWinner }}
           won!
@@ -134,7 +137,6 @@ const checkIfDraw = () => {
         <span v-if="theWinner === '' && checkIfDraw()">Draw!</span>
       </p>
     </article>
-
   </section>
   <Score :games="games" :players="playersInGame"></Score>
 
@@ -145,7 +147,7 @@ const checkIfDraw = () => {
         :key="cellIndex"
         :aria-disabled="board[rowIndex][cellIndex] != '' || theWinner != ''"
         @click="
-          $emit('playerMove', rowIndex, cellIndex, currentPlayer),
+          $emit('playerMove', rowIndex, cellIndex, currentPlayer.symbol),
             makeMove(rowIndex, cellIndex)
         "
       >
@@ -158,7 +160,7 @@ const checkIfDraw = () => {
 
   <div>
     <Button
-    class="new-game"
+      class="new-game"
       id="new-game"
       title="new game"
       text="Start new round"
@@ -170,7 +172,7 @@ const checkIfDraw = () => {
       "
     ></Button>
     <Button
-    class="reset"
+      class="reset"
       id="reset"
       title="reset"
       text="Reset"
@@ -206,7 +208,6 @@ td {
   display: flex;
   align-items: center;
   justify-content: center;
-  
 }
 p {
   font-size: 3rem;
@@ -219,12 +220,11 @@ p {
 #stats {
   display: flex;
   justify-content: space-between;
-  
 }
-.reset{
+.reset {
   background-color: red;
 }
-.new-game{
+.new-game {
   background-color: blue;
 }
 </style>

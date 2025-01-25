@@ -13,7 +13,13 @@ let state = ref<IGameState>({
   players: [],
   results: [],
   gameRunning: false,
-  currentPlayer: '',
+  currentPlayer: {
+    id: 0,
+    isCurrentPlayer: true,
+    symbol: '',
+    points: 0,
+    playerName: '',
+  },
   board: [
     ['', '', ''],
     ['', '', ''],
@@ -25,6 +31,7 @@ onMounted(() => {
   const storedState = localStorage.getItem('state.value');
   if (storedState) {
     state.value = JSON.parse(storedState);
+
   }
 });
 
@@ -55,37 +62,56 @@ const startGame = () => {
   const startingPlayer = () => {
     const randomBoolean = () => Math.random() >= 0.5;
     let playerOneIsCurrentPlayer = ref<boolean>(
-      state.value.games[state.value.games.length - 1].players[0].currentPlayer
+      state.value.games[state.value.games.length - 1].players[0].isCurrentPlayer
     );
     watch(playerOneIsCurrentPlayer, (updatedValue) => {
-      state.value.games[state.value.games.length - 1].players[0].currentPlayer =
-        updatedValue;
+      state.value.games[
+        state.value.games.length - 1
+      ].players[0].isCurrentPlayer = updatedValue;
     });
 
     let playerTwoIsCurrentPlayer = ref<boolean>(
-      state.value.games[state.value.games.length - 1].players[1].currentPlayer
+      state.value.games[state.value.games.length - 1].players[1].isCurrentPlayer
     );
     watch(playerTwoIsCurrentPlayer, (updatedValue) => {
-      state.value.games[state.value.games.length - 1].players[1].currentPlayer =
-        updatedValue;
+      state.value.games[
+        state.value.games.length - 1
+      ].players[1].isCurrentPlayer = updatedValue;
     });
 
     playerOneIsCurrentPlayer.value = randomBoolean();
     if (playerOneIsCurrentPlayer.value === true) {
       state.value.currentPlayer =
-        state.value.games[state.value.games.length - 1].players[0].symbol;
+        state.value.games[state.value.games.length - 1].players[0];
       playerTwoIsCurrentPlayer.value = false;
     } else {
       playerTwoIsCurrentPlayer.value = true;
       state.value.currentPlayer =
-        state.value.games[state.value.games.length - 1].players[1].symbol;
+        state.value.games[state.value.games.length - 1].players[1];
     }
   };
   startingPlayer();
 };
 
-const updateCurrentPlayer = (currentPlayerValue: string) => {
-  state.value.currentPlayer = currentPlayerValue;
+const updateCurrentPlayer = (currentPlayer: Player) => {
+  state.value.currentPlayer = currentPlayer;
+  console.log('currentplayer: '+currentPlayer.playerName)
+  state.value.players.map((player) => {
+    if (player === currentPlayer) {
+      return {
+        ...player, isCurrentPlayer: true,
+      };
+    } else {
+      return (player.isCurrentPlayer = false);
+    }
+  });
+  state.value.games[state.value.games.length - 1].players.map((player) => {
+    if (player === currentPlayer) {
+      return (player.isCurrentPlayer = true);
+    } else {
+      return (player.isCurrentPlayer = false);
+    }
+  });
 };
 
 const updateScoreAndWinner = (theWinnerName: string) => {
@@ -106,7 +132,13 @@ const resetGame = () => {
     players: [],
     results: [],
     gameRunning: false,
-    currentPlayer: '',
+    currentPlayer: {
+      id: 0,
+      isCurrentPlayer: true,
+      symbol: '',
+      points: 0,
+      playerName: '',
+    },
     board: [
       ['', '', ''],
       ['', '', ''],
@@ -133,9 +165,11 @@ const updateBoard = (rowIndex: number, cellIndex: number, value: string) => {
       :disabled="state.players.length < 2"
       @on-click="startGame"
     ></Button>
-    <GameParticipants v-if="!state.gameRunning" :players="state.players"></GameParticipants>
+    <GameParticipants
+      v-if="!state.gameRunning"
+      :players="state.players"
+    ></GameParticipants>
   </section>
-
 
   <Board
     v-if="state.gameRunning"
@@ -152,7 +186,7 @@ const updateBoard = (rowIndex: number, cellIndex: number, value: string) => {
 </template>
 
 <style scoped>
-section{
+section {
   display: flex;
   width: 100%;
   flex-direction: column;

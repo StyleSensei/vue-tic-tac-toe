@@ -1,11 +1,11 @@
 export class Player {
   id: number;
-  currentPlayer: boolean;
+  isCurrentPlayer: boolean;
   symbol:string
   points:number
   constructor(public playerName: string) {
     this.id = Date.now();
-    this.currentPlayer = false;
+    this.isCurrentPlayer = false;
     this.symbol = '0'
     this.points = 0
   }

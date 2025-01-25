@@ -7,6 +7,6 @@ export interface IGameState {
     players: Player[]
 results: IResult[],
 gameRunning: boolean,
-currentPlayer:string
+currentPlayer:Player
 board:[string[],string[],string[]]
 }
